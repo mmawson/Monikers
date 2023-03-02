@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "472422442568",
+    "firebase_url": "https://monikers-cee6a-default-rtdb.firebaseio.com",
+    "project_id": "monikers-cee6a",
+    "storage_bucket": "monikers-cee6a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:472422442568:android:0cc3139805924b682d1a7d",
+        "android_client_info": {
+          "package_name": "com.example.monikers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "472422442568-8pmqkhc3dmthi4sv12godmcg0shv0p61.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCK58pm1qe6y_1RGiXohV0QhcQ0MwabejM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "472422442568-8pmqkhc3dmthi4sv12godmcg0shv0p61.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
