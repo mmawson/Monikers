@@ -26,7 +26,9 @@
         android:text="One Phone Game"
         app:layout_constraintBottom_toTopOf="@id/multiPhoneButton"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"></Button>
+        app:layout_constraintRight_toRightOf="parent"
+        android:onClick="StartOnePhoneGame">
+    </Button>
 
     <Button
         android:id="@+id/multiPhoneButton"

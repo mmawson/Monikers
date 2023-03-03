@@ -52,4 +52,10 @@ public class HomeActivity extends AppCompatActivity {
        // getMenuInflater().inflate(R.menu.actionbar_menu, menu);
       return super.onCreateOptionsMenu(menu);
     }
+
+    public void StartOnePhoneGame(View v) {
+        //TODO: Can put extra here to give the cluegiver activity some variable to differentiate between a multi-phone and one phone game
+        Intent intent = new Intent(this, CluegivingActivity.class);
+        startActivity(intent);
+    }
 }
