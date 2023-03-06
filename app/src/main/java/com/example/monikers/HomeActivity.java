@@ -58,4 +58,10 @@ public class HomeActivity extends AppCompatActivity {
         Intent intent = new Intent(this, AddWordActivity.class);
         startActivity(intent);
     }
+
+    public void StartMultiPhoneGame(View v) {
+        //TODO: Can put extra here to give the cluegiver activity some variable to differentiate between a multi-phone and one phone game
+        Intent intent = new Intent(this, CluegivingActivity.class);
+        startActivity(intent);
+    }
 }
