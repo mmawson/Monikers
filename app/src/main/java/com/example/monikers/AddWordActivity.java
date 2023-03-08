@@ -43,6 +43,10 @@ public class AddWordActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
+        DatabaseReference usersWords = databaseReference.child("words").child(firebaseUser.getUid());
+        //Remove any existing words for this user in the db, so we are starting from scratch
+        usersWords.removeValue();
+
         // Set a click listener for the "Add" button
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,7 +57,7 @@ public class AddWordActivity extends AppCompatActivity {
                 if (!word.isEmpty() && wordCount < 5) {
                     wordCount++;
 
-                    databaseReference.child("words").child(firebaseUser.getUid()).push().setValue(word);
+                    usersWords.push().setValue(word);
 
                     textViewCounter.setText("Words added: " + wordCount);
 
