@@ -43,6 +43,8 @@ public class AddWordActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
+        //TODO: Store the words under games/<name>/words instead
+        //And have an entry under games/<name>/password as well
         DatabaseReference usersWords = databaseReference.child("words").child(firebaseUser.getUid());
         //Remove any existing words for this user in the db, so we are starting from scratch
         usersWords.removeValue();

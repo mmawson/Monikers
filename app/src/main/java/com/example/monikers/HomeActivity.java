@@ -60,8 +60,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void StartMultiPhoneGame(View v) {
-        //TODO: Can put extra here to give the cluegiver activity some variable to differentiate between a multi-phone and one phone game
-        Intent intent = new Intent(this, CluegivingActivity.class);
+        Intent intent = new Intent(this, HostJoinGame.class);
         startActivity(intent);
     }
 }
