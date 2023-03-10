@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Monikers</string>
+    <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
+    <string name="facebook_application_id" translatable="false">762029845495164</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb762029845495164</string>
+    <!-- Twitter guess -->
+    <string name="twitter_application_id" translatable="false">monikers-cee6a</string>
+    <string name="twitter_login_protocol_scheme" translatable="false">twmonikers-cee6a</string>
 </resources>
