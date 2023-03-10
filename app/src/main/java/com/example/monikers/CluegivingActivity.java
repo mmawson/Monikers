@@ -1,5 +1,6 @@
 package com.example.monikers;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -9,6 +10,17 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +29,9 @@ public class CluegivingActivity extends AppCompatActivity {
     //Full list of words we're playing with
     private ArrayList<String> mMonikerList;
     //The text view that has the timer countdown
-    private TextView mTimer;
+    private TextView mTimerText;
+    //The actual timer counting down
+    private CountDownTimer mTimer;
     //How many words are left to be guessed this round
     private Integer mNumWordsInDeck;
     //How many words have been guessed correctly this TURN
@@ -35,22 +49,14 @@ public class CluegivingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cluegiving);
 
-        //Initialize with dummy words for now
+        //Will be initialized with words from firebase real-time database
         mMonikerList = new ArrayList<String>();
-        mMonikerList.add("Alpha");
-        mMonikerList.add("Bravo");
-        mMonikerList.add("Charlie");
-        mMonikerList.add("Delta");
-        mMonikerList.add("Echo");
-        mMonikerList.add("Foxtrot");
-        mMonikerList.add("Golf");
 
-        mNumWordsInDeck = mMonikerList.size();
         mNumWordsCorrect = 0;
         mRoundNumber = 1;
         mActiveTeamNum = 1;
         mCurrentMonikerIndex = 0;
-        mTimer = findViewById(R.id.timer);
+        mTimerText = findViewById(R.id.timer);
 
         mTimerLengthSeconds = 30;
 
@@ -58,31 +64,55 @@ public class CluegivingActivity extends AppCompatActivity {
     }
 
     private void SetupGame() {
-        //Randomize list before we start
-        Collections.shuffle(mMonikerList);
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference wordsRef = database.getReference("words/"+currentUser.getUid());
 
-        ((TextView) findViewById(R.id.numGuessedCorrect)).setText("0");
-        DecrementMonikersLeft();
-        DisplayCurrentWord();
+        wordsRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (!task.isSuccessful()) {
+                    Log.e("Monikers", "Error getting data", task.getException());
+                }
+                else {
+                    DataSnapshot wordData = task.getResult();
+                    for (DataSnapshot word : wordData.getChildren()) {
+                        mMonikerList.add(word.getValue().toString());
+                    }
 
-        StartTimer();
+                    //Randomize list before we start
+                    Collections.shuffle(mMonikerList);
+
+                    //Now that we have the words, we can initialize the number of words left in deck
+                    mNumWordsInDeck = mMonikerList.size();
+
+                    DecrementMonikersLeft();
+                    DisplayCurrentWord();
+                    StartTimer();
+
+                    ((TextView) findViewById(R.id.numGuessedCorrect)).setText("0");
+                    Log.d("Monikers", String.valueOf(task.getResult().getValue()));
+                }
+            }
+        });
     }
 
     public void StartTimer() {
-        mTimer.setText(mTimerLengthSeconds.toString());
+        mTimerText.setText(mTimerLengthSeconds.toString());
         Log.d("Monikers", "Starting timer!");
-        new CountDownTimer(mTimerLengthSeconds * 1000, 1000) {
+        mTimer = new CountDownTimer(mTimerLengthSeconds * 1000, 1000) {
             public void onTick(long millisUntilFinished) {
                 Double timeLeft = Math.ceil(millisUntilFinished / 1000.0);
                 Integer timeLeftInt = timeLeft.intValue();
-                mTimer.setText(timeLeftInt.toString());
+                mTimerText.setText(timeLeftInt.toString());
             }
 
             public void onFinish() {
-                mTimer.setText("0");
-                EndRound();
+                mTimerText.setText("0");
+                EndTurn();
             }
-        }.start();
+        };
+        mTimer.start();
     }
 
     //Called when a player hits the 'Skip' button
@@ -96,17 +126,22 @@ public class CluegivingActivity extends AppCompatActivity {
 
     //Called when a player hits the 'Correct' button
     public void CorrectMoniker(View v) {
-        if (mNumWordsInDeck == 0) { EndRound(); return; }
+        if (mNumWordsInDeck == 0) { EndTurn(); EndRound(); return; }
         IncrementNumCorrect();
         DecrementMonikersLeft();
         ++mCurrentMonikerIndex;
         DisplayCurrentWord();
     }
 
-    //Called when the round ends, either through the last moniker being guessed, or the timer running out
+    //Called when the round ends, due to the last moniker being guessed
     private void EndRound() {
-        Log.d("Monikers", "TOAST MESSSAGE");
+        mTimer.cancel();
         Toast.makeText(this, "Round over!", Toast.LENGTH_LONG).show();
+    }
+
+    //Called when the turn ends, due to the timer running out, or the last moniker being guessed
+    private void EndTurn() {
+        Toast.makeText(this, "Turn over!", Toast.LENGTH_LONG).show();
     }
 
     //Change the text to display the word we are currently on
