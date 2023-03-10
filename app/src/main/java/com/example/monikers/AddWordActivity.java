@@ -24,11 +24,14 @@ public class AddWordActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
+    String mGameName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_word);
+
+        mGameName = getIntent().getStringExtra("gameName");
 
         editTextWord = findViewById(R.id.editText_word);
         textViewCounter = findViewById(R.id.textView_counter);
@@ -43,11 +46,8 @@ public class AddWordActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
-        //TODO: Store the words under games/<name>/words instead
         //And have an entry under games/<name>/password as well
-        DatabaseReference usersWords = databaseReference.child("words").child(firebaseUser.getUid());
-        //Remove any existing words for this user in the db, so we are starting from scratch
-        usersWords.removeValue();
+        DatabaseReference gameWords = databaseReference.child("games").child(mGameName).child("words");
 
         // Set a click listener for the "Add" button
         buttonSave.setOnClickListener(new View.OnClickListener() {
@@ -59,7 +59,7 @@ public class AddWordActivity extends AppCompatActivity {
                 if (!word.isEmpty() && wordCount < 5) {
                     wordCount++;
 
-                    usersWords.push().setValue(word);
+                    gameWords.push().setValue(word);
 
                     textViewCounter.setText("Words added: " + wordCount);
 
@@ -74,8 +74,9 @@ public class AddWordActivity extends AppCompatActivity {
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Start the next activity
-                startActivity(new Intent(AddWordActivity.this, CluegivingActivity.class));
+                Intent intent = new Intent(AddWordActivity.this, CluegivingActivity.class);
+                intent.putExtra("gameName", mGameName);
+                startActivity(intent);
             }
         });
     }

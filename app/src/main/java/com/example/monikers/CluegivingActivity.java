@@ -43,11 +43,14 @@ public class CluegivingActivity extends AppCompatActivity {
     //The Moniker that the player is currently giving clues for (by index)
     private Integer mCurrentMonikerIndex;
     private Integer mTimerLengthSeconds;
+    String mGameName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cluegiving);
+
+        mGameName = getIntent().getStringExtra("gameName");
 
         //Will be initialized with words from firebase real-time database
         mMonikerList = new ArrayList<String>();
@@ -66,7 +69,7 @@ public class CluegivingActivity extends AppCompatActivity {
     private void SetupGame() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference wordsRef = database.getReference("words/"+currentUser.getUid());
+        DatabaseReference wordsRef = database.getReference("games").child(mGameName).child("words");
 
         wordsRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
