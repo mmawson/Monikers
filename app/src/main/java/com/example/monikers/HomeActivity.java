@@ -54,8 +54,9 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void StartOnePhoneGame(View v) {
-        //TODO: Can put extra here to give the cluegiver activity some variable to differentiate between a multi-phone and one phone game
+        //For a one phone game, we use the user's uid to create a unique game name
         Intent intent = new Intent(this, AddWordActivity.class);
+        intent.putExtra("gameName", "User " + mAuth.getCurrentUser().getUid() + " local game");
         startActivity(intent);
     }
 
