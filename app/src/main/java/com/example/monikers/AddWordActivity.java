@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -18,9 +19,14 @@ public class AddWordActivity extends AppCompatActivity {
 
     private EditText editTextWord;
     private TextView textViewCounter;
+    private TextView textViewTotalWords;
     private Button buttonSave, buttonNext;
-    private int wordCount = 0;
+    private ProgressBar progressBar;
+    private int totalWords;
+    private int playerCount;
+    private int maxWordsTotal;
 
+    private int wordCount=0;
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -31,13 +37,22 @@ public class AddWordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_word);
 
-        mGameName = getIntent().getStringExtra("gameName");
+//        mGameName = getIntent().getStringExtra("gameName");
 
         editTextWord = findViewById(R.id.editText_word);
         textViewCounter = findViewById(R.id.textView_counter);
+        textViewTotalWords = findViewById(R.id.textView_total_words);
         buttonSave = findViewById(R.id.button_save);
         buttonNext = findViewById(R.id.button_next);
+        progressBar = findViewById(R.id.progressBar);
         buttonNext.setEnabled(false);
+
+        Intent intent = getIntent();
+        playerCount = intent.getIntExtra("playerCountEditText", 0);
+        maxWordsTotal = playerCount * 5;
+        totalWords = maxWordsTotal;
+
+        textViewTotalWords.setText("Number of remaining words: " + totalWords);
 
         // Get a reference to the Firebase database
         databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -47,7 +62,7 @@ public class AddWordActivity extends AppCompatActivity {
         firebaseUser = firebaseAuth.getCurrentUser();
 
         //And have an entry under games/<name>/password as well
-        DatabaseReference gameWords = databaseReference.child("games").child(mGameName).child("words");
+//        DatabaseReference gameWords = databaseReference.child("games").child(mGameName).child("words");
 
         // Set a click listener for the "Add" button
         buttonSave.setOnClickListener(new View.OnClickListener() {
@@ -56,14 +71,19 @@ public class AddWordActivity extends AppCompatActivity {
                 String word = editTextWord.getText().toString().trim();
 
                 // Check if the word is not empty and the word count is less than 5
-                if (!word.isEmpty() && wordCount < 5) {
+                if (!word.isEmpty() && wordCount < maxWordsTotal) {
                     wordCount++;
+                    totalWords--;
 
-                    gameWords.push().setValue(word);
+//                    gameWords.push().setValue(word);
 
                     textViewCounter.setText("Words added: " + wordCount);
+                    textViewTotalWords.setText("Number of remaining words: " + totalWords);
 
-                    if (wordCount == 5) {
+                    int progress = (int) (((float) wordCount / (float) maxWordsTotal) * 100);
+                    progressBar.setProgress(progress);
+
+                    if (wordCount == maxWordsTotal) {
                         buttonNext.setEnabled(true);
                     }
                 }
@@ -75,7 +95,7 @@ public class AddWordActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AddWordActivity.this, CluegivingActivity.class);
-                intent.putExtra("gameName", mGameName);
+//                intent.putExtra("gameName", mGameName);
                 startActivity(intent);
             }
         });
