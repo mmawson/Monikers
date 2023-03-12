@@ -9,14 +9,31 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class PlayerCount extends AppCompatActivity {
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+public class PlayerCountActivity extends AppCompatActivity {
 
     private EditText playerCountEditText;
+
+    public int getPlayerCount() {
+        return playerCount;
+    }
+
+    private int playerCount;
+
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player_count);
+
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+
         playerCountEditText = findViewById(R.id.playerCountEditText);
 
         Button nextButton = findViewById(R.id.nextButton);
@@ -26,10 +43,12 @@ public class PlayerCount extends AppCompatActivity {
                 String playerCountString = playerCountEditText.getText().toString();
 
                 if (playerCountString.matches("[0-9]+")) {
-                    int playerCount = Integer.parseInt(playerCountString);
+                    playerCount = Integer.parseInt(playerCountString);
                     // Start game with playerCount number of players
 
-                    Intent intent = new Intent(PlayerCount.this, AddWordActivity.class);
+                    Intent intent = new Intent(PlayerCountActivity.this, AddWordActivity.class);
+                    intent.putExtra("numOfPlayer", playerCount);
+//                    intent.putExtra("gameName", "User " + mAuth.getCurrentUser().getUid() + " local game");
                     startActivity(intent);
 
                 } else {
@@ -38,4 +57,5 @@ public class PlayerCount extends AppCompatActivity {
             }
         });
     }
+
 }

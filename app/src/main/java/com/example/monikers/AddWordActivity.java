@@ -9,11 +9,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class AddWordActivity extends AppCompatActivity {
 
@@ -48,7 +52,7 @@ public class AddWordActivity extends AppCompatActivity {
         buttonNext.setEnabled(false);
 
         Intent intent = getIntent();
-        playerCount = intent.getIntExtra("playerCountEditText", 0);
+        playerCount = intent.getIntExtra("numOfPlayer", 0);
         maxWordsTotal = playerCount * 5;
         totalWords = maxWordsTotal;
 
@@ -72,24 +76,45 @@ public class AddWordActivity extends AppCompatActivity {
 
                 // Check if the word is not empty and the word count is less than 5
                 if (!word.isEmpty() && wordCount < maxWordsTotal) {
-                    wordCount++;
-                    totalWords--;
 
-//                    gameWords.push().setValue(word);
+                    // Check if the word already exists
+                    databaseReference.child("words").child(firebaseUser.getUid()).orderByValue().equalTo(word)
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()) {
+                                        // The word already exists, show a toast and don't add the word
+                                        Toast.makeText(AddWordActivity.this, "This word already exists, please enter a new word", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        // The word does not exist, add it to the database
+                                        wordCount++;
+                                        totalWords--;
+                                        databaseReference.child("words").child(firebaseUser.getUid()).push().setValue(word);
+                                        textViewCounter.setText("Words added: " + wordCount);
+                                        textViewTotalWords.setText("Number of remaining words: " + totalWords);
+                                        int progress = (int) (((float) wordCount / (float) maxWordsTotal) * 100);
+                                        progressBar.setProgress(progress);
 
-                    textViewCounter.setText("Words added: " + wordCount);
-                    textViewTotalWords.setText("Number of remaining words: " + totalWords);
+                                        if (wordCount == maxWordsTotal) {
+                                            buttonNext.setEnabled(true);
+                                            Toast.makeText(AddWordActivity.this, "Please select 'NEXT' to enter game", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                    editTextWord.setText("");
+                                }
 
-                    int progress = (int) (((float) wordCount / (float) maxWordsTotal) * 100);
-                    progressBar.setProgress(progress);
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    // Handle database error
+                                }
+                            });
 
-                    if (wordCount == maxWordsTotal) {
-                        buttonNext.setEnabled(true);
-                    }
+                } else {
+                    editTextWord.setText("");
                 }
-                editTextWord.setText("");
             }
         });
+
 
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
