@@ -6,4 +6,20 @@
     <!-- Twitter guess -->
     <string name="twitter_application_id" translatable="false">monikers-cee6a</string>
     <string name="twitter_login_protocol_scheme" translatable="false">twmonikers-cee6a</string>
+
+    <string name="gameDescription" translatable="false">Monikers is a game that celebrates the diversity
+        of the natural world, encouraging players to connect with their surroundings and explore their
+        imagination. Two teams, comprised of two or more players each, come together for a minimum of
+        four players. To start the game, any player can use their mobile phone and enter five monikers,
+        which can be anyone or anything - real or fictitious - inspired by the natural world.
+        Once all players have entered their monikers, the app shuffles them and play proceeds in three rounds.
+        In the first round, one player from the first team is designated to provide clues to their team
+        to guess each moniker. The designated player has 60 seconds to read five monikers, one at a time,
+        and provide clues without saying the name of the moniker. The second team plays after 60 seconds
+        have elapsed. In the second round, the designated player is limited to providing a one-word clue.
+        In the third round, the designated player has to pantomime the moniker using sounds and gestures
+        but no words. The playing team can make as many guesses as they want. If they guess correctly,
+        the designated player touches the “correct” button on the phone, and the team gets points. The
+        team with the most points at the end of three rounds wins.</string>
+
 </resources>

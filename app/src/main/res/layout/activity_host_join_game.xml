@@ -51,28 +51,31 @@
         app:layout_constraintTop_toBottomOf="@id/gamePassword"
         app:layout_constraintLeft_toLeftOf="parent">
     </EditText>
-    <Button
-        android:id="@+id/hostGameButton"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginLeft="10sp"
-        app:layout_constraintHeight_percent="0.15"
-        app:layout_constraintWidth_percent="0.4"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:onClick="hostGame"
-        android:text="Host Game">
-    </Button>
+
     <Button
         android:id="@+id/joinGameButton"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginLeft="15sp"
-        app:layout_constraintHeight_percent="0.15"
-        app:layout_constraintWidth_percent="0.4"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/hostGameButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="56dp"
+        android:layout_marginBottom="64dp"
         android:onClick="joinGame"
-        android:text="Join Game">
-    </Button>
+        android:text="Join Game"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.15"
+        app:layout_constraintLeft_toRightOf="@id/hostGameButton"
+        app:layout_constraintWidth_percent="0.4" />
+
+    <Button
+        android:id="@+id/hostGameButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="28dp"
+        android:layout_marginBottom="64dp"
+        android:onClick="hostGame"
+        android:text="Host Game"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.15"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintWidth_percent="0.4" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
