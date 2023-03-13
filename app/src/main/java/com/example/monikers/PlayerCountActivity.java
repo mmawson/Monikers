@@ -48,7 +48,8 @@ public class PlayerCountActivity extends AppCompatActivity {
 
                     Intent intent = new Intent(PlayerCountActivity.this, AddWordActivity.class);
                     intent.putExtra("numOfPlayer", playerCount);
-//                    intent.putExtra("gameName", "User " + mAuth.getCurrentUser().getUid() + " local game");
+                    String wordsDBPath = "words/" + FirebaseAuth.getInstance().getCurrentUser().getUid();
+                    intent.putExtra("wordsDBPath", wordsDBPath);
                     startActivity(intent);
 
                 } else {

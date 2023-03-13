@@ -88,8 +88,9 @@ public class HostJoinGame extends AppCompatActivity {
     }
 
     private void goToNextActivity(String gameName) {
-        Intent intent = new Intent(this, AddWordMultiActivity.class);
-        intent.putExtra("gameName", gameName);
+        Intent intent = new Intent(this, AddWordActivity.class);
+        String wordsDBPath = "games/" + gameName + "/words";
+        intent.putExtra("wordsDBPath", wordsDBPath);
         startActivity(intent);
     }
 }

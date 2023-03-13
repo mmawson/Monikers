@@ -39,7 +39,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void StartSettings(View v) {
-        Intent intent = new Intent(this, AddWordMultiActivity.class);
+        Intent intent = new Intent(this, AddWordActivity.class);
         startActivity(intent);
     }
 

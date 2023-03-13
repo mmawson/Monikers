@@ -44,7 +44,7 @@ public class AddWordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_word);
 
-//        mGameName = getIntent().getStringExtra("gameName");
+        mWordsDBPath = getIntent().getStringExtra("wordsDBPath");
 
         editTextWord = findViewById(R.id.editText_word);
         textViewCounter = findViewById(R.id.textView_counter);
@@ -55,7 +55,7 @@ public class AddWordActivity extends AppCompatActivity {
         buttonNext.setEnabled(false);
 
         Intent intent = getIntent();
-        playerCount = intent.getIntExtra("numOfPlayer", 0);
+        playerCount = intent.getIntExtra("numOfPlayer", 1);
         maxWordsTotal = playerCount * 5;
         totalWords = maxWordsTotal;
 
@@ -67,8 +67,6 @@ public class AddWordActivity extends AppCompatActivity {
         // Get a reference to the Firebase Authentication instance and the current user
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
-
-        mWordsDBPath = "words/" + firebaseUser.getUid();
 
         // Set a click listener for the "Add" button
         buttonSave.setOnClickListener(new View.OnClickListener() {
