@@ -36,7 +36,7 @@ public class AddWordActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
-    String mGameName;
+    String mWordsDBPath;
     private ArrayList<String> wordList = new ArrayList<String>();
 
     @Override
@@ -68,8 +68,7 @@ public class AddWordActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
-        //And have an entry under games/<name>/password as well
-//        DatabaseReference gameWords = databaseReference.child("games").child(mGameName).child("words");
+        mWordsDBPath = "words/" + firebaseUser.getUid();
 
         // Set a click listener for the "Add" button
         buttonSave.setOnClickListener(new View.OnClickListener() {
@@ -114,7 +113,7 @@ public class AddWordActivity extends AppCompatActivity {
                             buttonNext.setEnabled(true);
                             Toast.makeText(AddWordActivity.this, "Please select 'NEXT' to enter game", Toast.LENGTH_SHORT).show();
                             // Send the array of words to the database
-                            databaseReference.child("words").child(firebaseUser.getUid()).setValue(wordList);
+                            databaseReference.child(mWordsDBPath).setValue(wordList);
                             editTextWord.setEnabled(false);
                         }
                     }
@@ -129,7 +128,7 @@ public class AddWordActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AddWordActivity.this, CluegivingActivity.class);
-//                intent.putExtra("gameName", mGameName);
+                intent.putExtra("wordsDBPath", mWordsDBPath);
                 startActivity(intent);
             }
         });
