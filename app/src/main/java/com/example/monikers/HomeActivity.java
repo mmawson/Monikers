@@ -38,10 +38,10 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void StartSettings(View v) {
-        Intent intent = new Intent(this, AddWordActivity.class);
-        startActivity(intent);
-    }
+//    public void StartSettings(View v) {
+//        Intent intent = new Intent(this, .class);
+//        startActivity(intent);
+//    }
 
     public void StartHowToPlay(View v) {
         Intent intent = new Intent(this, HowToPlayActivity.class);

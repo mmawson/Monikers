@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray"
     android:paddingLeft="30dp"
     android:paddingTop="10dp"
     android:paddingRight="30dp"
+    android:background="@drawable/background"
     tools:context="com.example.monikers.SignupLogin">
 
     <ImageView
