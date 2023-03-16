@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
@@ -33,9 +35,32 @@ public class HomeActivityWithNavDrawer extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         navigationView.setNavigationItemSelectedListener(this);
-
+        TextView homeTextView = (TextView) findViewById(R.id.titleText);
+        Button homeOnePhone = (Button) findViewById(R.id.onePhoneButton);
+        Button homeMultiPhone = (Button) findViewById(R.id.multiPhoneButton);
+        Button homeSettings = (Button) findViewById(R.id.settingsButton);
+        Button homeHowToPlay = (Button) findViewById(R.id.howToPlayButton);
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
-                R.string.ndopen, R.string.ndclose);
+                R.string.ndopen, R.string.ndclose) {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                homeTextView.setVisibility(View.VISIBLE);
+                homeOnePhone.setVisibility(View.VISIBLE);
+                homeMultiPhone.setVisibility(View.VISIBLE);
+                homeSettings.setVisibility(View.VISIBLE);
+                homeHowToPlay.setVisibility(View.VISIBLE);
+            }
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                homeTextView.setVisibility(View.INVISIBLE);
+                homeOnePhone.setVisibility(View.INVISIBLE);
+                homeMultiPhone.setVisibility(View.INVISIBLE);
+                homeSettings.setVisibility(View.INVISIBLE);
+                homeHowToPlay.setVisibility(View.INVISIBLE);
+            }
+        };
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
 
@@ -97,6 +122,7 @@ public class HomeActivityWithNavDrawer extends AppCompatActivity
                 return super.onOptionsItemSelected(item);
         }
     }
+
 
 
 }
