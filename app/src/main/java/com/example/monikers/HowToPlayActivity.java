@@ -21,7 +21,7 @@ public class HowToPlayActivity extends AppCompatActivity {
     }
 
     public void BackToHome(View v){
-        Intent intent = new Intent(this, HomeActivity.class);
+        Intent intent = new Intent(this, HomeActivityWithNavDrawer.class);
         startActivity(intent);
     }
 }

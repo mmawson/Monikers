@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
                 else{
                     // if(currentUser.isEmailVerified()) {
                     //Toast.makeText(MainActivity.this, "User already signed in", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(MainActivity.this, HomeActivity.class));
+                    startActivity(new Intent(MainActivity.this, HomeActivityWithNavDrawer.class));
                     finish();
                     // }
                     // else{

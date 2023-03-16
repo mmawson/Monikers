@@ -17,6 +17,13 @@
         android:theme="@style/Theme.Monikers"
         tools:targetApi="31">
         <activity
+            android:name=".HomeActivityWithNavDrawer"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".HowToPlayActivity"
             android:exported="false" />
         <activity
@@ -50,9 +57,6 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-        <activity
-            android:name=".HomeActivity"
-            android:exported="false" />
         <activity
             android:name=".SignupLogin"
             android:exported="false" />

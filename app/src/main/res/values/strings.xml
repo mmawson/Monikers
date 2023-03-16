@@ -6,6 +6,9 @@
     <!-- Twitter guess -->
     <string name="twitter_application_id" translatable="false">monikers-cee6a</string>
     <string name="twitter_login_protocol_scheme" translatable="false">twmonikers-cee6a</string>
+    <string name="ndopen" translatable="false">Navigation Drawer Open</string>
+    <string name="ndclose" translatable="false">Navigation Drawer Closed</string>
+
 
     <string name="gameDescription" translatable="false">Monikers is a game that celebrates the diversity
         of the natural world, encouraging players to connect with their surroundings and explore their

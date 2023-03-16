@@ -78,7 +78,7 @@ public class SignupLogin extends AppCompatActivity {
                     public void onSuccess(AuthResult authResult) {
                         currentUser=authResult.getUser();
                         Toast.makeText(SignupLogin.this, "Login Succesful.", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(SignupLogin.this, HomeActivity.class));
+                        startActivity(new Intent(SignupLogin.this, HomeActivityWithNavDrawer.class));
                         finish();
                     }
                 }).addOnFailureListener(this, new OnFailureListener() {
