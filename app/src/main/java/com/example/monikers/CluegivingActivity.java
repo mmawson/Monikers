@@ -15,11 +15,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CluegivingActivity extends AppCompatActivity {
     //Full list of words we're playing with
@@ -39,14 +43,18 @@ public class CluegivingActivity extends AppCompatActivity {
     //The Moniker that the player is currently giving clues for (by index)
     private Integer mCurrentMonikerIndex;
     private Integer mTimerLengthSeconds;
-    String mWordsDBPath;
+    //True if we are the host of the game
+    private boolean mAreWeHost;
+    String mGameDBPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cluegiving);
 
-        mWordsDBPath = getIntent().getStringExtra("wordsDBPath");
+        mGameDBPath = getIntent().getStringExtra("gameDBPath");
+
+        mAreWeHost = getIntent().getBooleanExtra("areWeHost", false);
 
         //Will be initialized with words from firebase real-time database
         mMonikerList = new ArrayList<String>();
@@ -65,7 +73,7 @@ public class CluegivingActivity extends AppCompatActivity {
     private void SetupGame() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference wordsRef = database.getReference(mWordsDBPath);
+        DatabaseReference wordsRef = database.getReference(mGameDBPath + "/words");
 
         wordsRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
@@ -97,21 +105,65 @@ public class CluegivingActivity extends AppCompatActivity {
     }
 
     public void StartTimer() {
-        mTimerText.setText(mTimerLengthSeconds.toString());
-        Log.d("Monikers", "Starting timer!");
-        mTimer = new CountDownTimer(mTimerLengthSeconds * 1000, 1000) {
-            public void onTick(long millisUntilFinished) {
-                Double timeLeft = Math.ceil(millisUntilFinished / 1000.0);
-                Integer timeLeftInt = timeLeft.intValue();
-                mTimerText.setText(timeLeftInt.toString());
+        SetupTimerToListenForDBChanges();
+
+        //Only host will update the DB timer, others only read from it
+        if (mAreWeHost)
+        {
+            UpdateDBTimer(mTimerLengthSeconds);
+            Log.d("Monikers", "Starting timer!");
+
+            mTimer = new CountDownTimer(mTimerLengthSeconds * 1000, 1000) {
+                public void onTick(long millisUntilFinished) {
+                    Double timeLeft = Math.ceil(millisUntilFinished / 1000.0);
+                    Integer timeLeftInt = timeLeft.intValue();
+                    UpdateDBTimer(timeLeftInt);
+                }
+
+                public void onFinish() {
+                    UpdateDBTimer(0);
+                    EndTurn();
+                }
+            };
+            mTimer.start();
+        }
+    }
+
+    private void UpdateDBTimer(Integer timeLeft)
+    {
+        // Get a reference to the Firebase database
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        DatabaseReference thisGame = databaseReference.child(mGameDBPath);
+
+        Map<String, Object> dbTimeLeft = new HashMap();
+        dbTimeLeft.put("timeLeft", timeLeft);
+
+        thisGame.push();
+        thisGame.updateChildren(dbTimeLeft);
+    }
+
+    private void SetupTimerToListenForDBChanges(){
+        // Get a reference to the Firebase database
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        DatabaseReference dbTimer = databaseReference.child(mGameDBPath).child("timeLeft");
+
+        ValueEventListener postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                Long timerEntry = (Long) dataSnapshot.getValue();
+                mTimerText.setText(timerEntry.toString());
             }
 
-            public void onFinish() {
-                mTimerText.setText("0");
-                EndTurn();
+            @Override
+            public void onCancelled (DatabaseError databaseError)
+            {
+                Log.w("Monikers", databaseError.toException());
             }
         };
-        mTimer.start();
+        dbTimer.addValueEventListener(postListener);
     }
 
     //Called when a player hits the 'Skip' button

@@ -49,7 +49,7 @@ public class HostJoinGame extends AppCompatActivity {
         thisGame.push();
         thisGame.updateChildren(gameDetails);
 
-        goToNextActivity(gameName);
+        goToNextActivity(gameName, true);
     }
 
     public void joinGame(View v){
@@ -76,7 +76,7 @@ public class HostJoinGame extends AppCompatActivity {
                     for (DataSnapshot child : gameData.getChildren()) {
                         if (child.getKey().equals("password")) {
                             if (child.getValue().equals(mGamePassword.getText().toString())) {
-                                goToNextActivity(gameName);
+                                goToNextActivity(gameName, false);
                             } else {
                                 Toast.makeText(getApplicationContext(), "Incorrect password!", Toast.LENGTH_LONG).show();
                             }
@@ -87,10 +87,11 @@ public class HostJoinGame extends AppCompatActivity {
         });
     }
 
-    private void goToNextActivity(String gameName) {
+    private void goToNextActivity(String gameName, boolean areWeHost) {
         Intent intent = new Intent(this, AddWordActivity.class);
-        String wordsDBPath = "games/" + gameName + "/words";
-        intent.putExtra("wordsDBPath", wordsDBPath);
+        String gameDBPath = "games/" + gameName;
+        intent.putExtra("gameDBPath", gameDBPath);
+        intent.putExtra("areWeHost", areWeHost);
         startActivity(intent);
     }
 }

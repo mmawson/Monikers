@@ -37,6 +37,9 @@ public class AddWordActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     String mWordsDBPath;
+    String mGameDBPath;
+    //True if we are the host of the game
+    boolean mAreWeHost;
     private ArrayList<String> wordList = new ArrayList<String>();
 
     @Override
@@ -44,7 +47,10 @@ public class AddWordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_word);
 
-        mWordsDBPath = getIntent().getStringExtra("wordsDBPath");
+        mGameDBPath = getIntent().getStringExtra("gameDBPath");
+        mWordsDBPath = mGameDBPath + "/words";
+
+        mAreWeHost = getIntent().getBooleanExtra("areWeHost", false);
 
         editTextWord = findViewById(R.id.editText_word);
         textViewCounter = findViewById(R.id.textView_counter);
@@ -126,7 +132,8 @@ public class AddWordActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AddWordActivity.this, CluegivingActivity.class);
-                intent.putExtra("wordsDBPath", mWordsDBPath);
+                intent.putExtra("gameDBPath", mGameDBPath);
+                intent.putExtra("areWeHost", mAreWeHost);
                 startActivity(intent);
             }
         });
