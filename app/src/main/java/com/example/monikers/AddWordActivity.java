@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,9 +29,11 @@ public class AddWordActivity extends AppCompatActivity {
     private TextView textViewCounter;
     private TextView textViewTotalWords;
     private Button buttonSave, buttonNext;
+    private FloatingActionButton homeButton;
     private ProgressBar progressBar;
     private int totalWords;
     private int playerCount;
+    private int cardsCount;
     private int maxWordsTotal;
     private int wordCount=0;
     private DatabaseReference databaseReference;
@@ -57,12 +60,14 @@ public class AddWordActivity extends AppCompatActivity {
         textViewTotalWords = findViewById(R.id.textView_total_words);
         buttonSave = findViewById(R.id.button_save);
         buttonNext = findViewById(R.id.button_next);
+        homeButton = findViewById(R.id.homeButton);
         progressBar = findViewById(R.id.progressBar);
         buttonNext.setEnabled(false);
 
         Intent intent = getIntent();
         playerCount = intent.getIntExtra("numOfPlayer", 1);
-        maxWordsTotal = playerCount * 5;
+        cardsCount = intent.getIntExtra("numOfCards", 5);
+        maxWordsTotal = playerCount * cardsCount;
         totalWords = maxWordsTotal;
 
         textViewTotalWords.setText("Number of remaining words: " + totalWords);
@@ -80,7 +85,7 @@ public class AddWordActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String word = editTextWord.getText().toString().trim();
 
-                // Check if the word is not empty and the word count is less than 5
+                // Check if the word is not empty and the word count is less than then number inputted
                 if (!word.isEmpty() && wordCount < maxWordsTotal) {
                     if (wordList.contains(word)) {
                         // The word already exists in the list, show a toast and don't add the word
@@ -106,7 +111,7 @@ public class AddWordActivity extends AppCompatActivity {
                                 totalWords++;
                                 textViewCounter.setText("Word added: " + wordCount);
                                 textViewTotalWords.setText("Number of remaining words: " + totalWords);
-                                int progress = (int) (((float) wordCount / (float) 5) * 100);
+                                int progress = (int) (((float) wordCount / (float) cardsCount) * 100);
                                 progressBar.setProgress(progress);
                                 Snackbar.make(view, "Word removed", Snackbar.LENGTH_SHORT).show();
                             }
@@ -124,6 +129,15 @@ public class AddWordActivity extends AppCompatActivity {
                 } else {
                     editTextWord.setText("");
                 }
+            }
+        });
+
+        homeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(AddWordActivity.this, HomeActivityWithNavDrawer.class);
+                startActivity(intent);
+                finish();
             }
         });
 

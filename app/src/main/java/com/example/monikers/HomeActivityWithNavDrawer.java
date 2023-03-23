@@ -87,7 +87,7 @@ public class HomeActivityWithNavDrawer extends AppCompatActivity
     }
     public void StartOnePhoneGame(View v) {
         //For a one phone game, we use the user's uid to create a unique game name
-        Intent intent = new Intent(this, PlayerCountActivity.class);
+        Intent intent = new Intent(this, OnePhoneGameSettingActivity.class);
         startActivity(intent);
     }
 
@@ -97,9 +97,8 @@ public class HomeActivityWithNavDrawer extends AppCompatActivity
     }
 
     public void StartSettings(View v) {
-        Toast.makeText(this, "Settings Clicked", Toast.LENGTH_SHORT).show();
-//        Intent intent = new Intent(this, .class);
-//        startActivity(intent);
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 
     public void StartHowToPlay(View v) {
@@ -116,7 +115,8 @@ public class HomeActivityWithNavDrawer extends AppCompatActivity
                 finish();
                 return true;
             case R.id.menu_settings:
-                Toast.makeText(this, "Settings Clicked", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

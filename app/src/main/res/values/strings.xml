@@ -25,4 +25,10 @@
         the designated player touches the “correct” button on the phone, and the team gets points. The
         team with the most points at the end of three rounds wins.</string>
 
+    <string-array name="game_time_options">
+        <item>1:00</item>
+        <item>1:30</item>
+        <item>2:00</item>
+    </string-array>
+
 </resources>

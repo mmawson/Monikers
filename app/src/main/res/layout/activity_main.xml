@@ -4,66 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="@drawable/img">
 
-<!--    <TextView
-        android:id="@+id/titleText"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:text="Monikers"
-        android:textSize="60dp"
-        android:textStyle="bold"
-        android:gravity="center"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/onePhoneButton">
-    </TextView>
-
-    <Button
-        android:id="@+id/onePhoneButton"
-        android:layout_width="250dp"
-        android:layout_height="125dp"
-        android:text="One Phone Game"
-        app:layout_constraintBottom_toTopOf="@id/multiPhoneButton"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"></Button>
-
-    <Button
-        android:id="@+id/multiPhoneButton"
-        android:layout_width="250dp"
-        android:layout_height="125dp"
-        android:text="Multi-phone Game"
-        app:layout_constraintBottom_toTopOf="@id/centerView"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"></Button>
-
-    <View
-        android:id="@+id/centerView"
-        android:layout_width="1dp"
-        android:layout_height="1dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></View>
-
-    <Button
-        android:id="@+id/settingsButton"
-        android:layout_width="250dp"
-        android:layout_height="125dp"
-        android:text="Settings"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/centerView"></Button>
-
-    <Button
-        android:id="@+id/howToPlayButton"
-        android:layout_width="250dp"
-        android:layout_height="125dp"
-        android:layout_weight="1"
-        android:text="How to Play"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/settingsButton"></Button>
--->
 </androidx.constraintlayout.widget.ConstraintLayout>
