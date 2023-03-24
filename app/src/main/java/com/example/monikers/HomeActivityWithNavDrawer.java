@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -74,9 +76,20 @@ public class HomeActivityWithNavDrawer extends AppCompatActivity
 
     @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setReorderingAllowed(true);
+        fragmentTransaction.addToBackStack("name");
+        NavigationFragment navigationFragment = new NavigationFragment();
+        Bundle mBundle = new Bundle();
+
         switch (menuItem.getItemId()) {
             case R.id.nav_first_fragment:
-                Toast.makeText(this, "Load How To Play Fragment", Toast.LENGTH_SHORT).show();
+                mBundle.putString("fragmentText", getString(R.string.gameDescription));
+                mBundle.putString("Title", "How To Play");
+                navigationFragment.setArguments(mBundle);
+                fragmentTransaction.add(R.id.fragment_container_view, navigationFragment);
+                fragmentTransaction.commit();
                 break;
             case R.id.nav_second_fragment:
                 Toast.makeText(this, "Biographical Info Fragment", Toast.LENGTH_SHORT).show();
