@@ -16,7 +16,7 @@
         android:layout_marginRight="16dp"
         android:text="Welcome to Monikers"
         android:textAlignment="center"
-        android:textSize="30dp" />
+        android:textSize="30sp" />
 
     <TextView
         android:id="@+id/description"
@@ -28,7 +28,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginRight="16dp"
         android:textAlignment="center"
-        android:textSize="13dp"/>
+        android:textSize="13sp"/>
 
     <Button
         android:id="@+id/nextButton"
