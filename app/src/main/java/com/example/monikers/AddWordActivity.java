@@ -53,7 +53,7 @@ public class AddWordActivity extends AppCompatActivity {
         mGameDBPath = getIntent().getStringExtra("gameDBPath");
         mWordsDBPath = mGameDBPath + "/words";
 
-        mAreWeHost = getIntent().getBooleanExtra("areWeHost", false);
+        mAreWeHost = getIntent().getBooleanExtra("areWeHost", true);
 
         editTextWord = findViewById(R.id.editText_word);
         textViewCounter = findViewById(R.id.textView_counter);
@@ -145,9 +145,21 @@ public class AddWordActivity extends AppCompatActivity {
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(AddWordActivity.this, CluegivingActivity.class);
+                Intent intent;
+
+                //Start with host as cluegiver
+                if (mAreWeHost)
+                {
+                    intent = new Intent(AddWordActivity.this, CluegivingActivity.class);
+                }
+                else
+                {
+                    intent = new Intent(AddWordActivity.this, ClueguessingActivity.class);
+                }
+
                 intent.putExtra("gameDBPath", mGameDBPath);
                 intent.putExtra("areWeHost", mAreWeHost);
+
                 startActivity(intent);
             }
         });

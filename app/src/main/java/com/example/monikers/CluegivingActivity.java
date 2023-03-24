@@ -3,6 +3,9 @@ package com.example.monikers;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -28,6 +31,8 @@ import java.util.Map;
 public class CluegivingActivity extends AppCompatActivity {
     //Full list of words we're playing with
     private ArrayList<String> mMonikerList;
+    //Subset of the Monikers being used for this turn
+    private ArrayList<String> mCurrentMonikerList;
     //The text view that has the timer countdown
     private TextView mTimerText;
     //The actual timer counting down
@@ -43,12 +48,15 @@ public class CluegivingActivity extends AppCompatActivity {
     //The Moniker that the player is currently giving clues for (by index)
     private Integer mCurrentMonikerIndex;
     private Integer mTimerLengthSeconds;
+    private TextView mRoundBanner;
     //True if we are the host of the game
     private boolean mAreWeHost;
     String mGameDBPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //TODO: Pass Huiying's settings into this Activity. Also, push a 'game is over' to the DB so clueguesser games also go back to home screen at end
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cluegiving);
 
@@ -56,8 +64,11 @@ public class CluegivingActivity extends AppCompatActivity {
 
         mAreWeHost = getIntent().getBooleanExtra("areWeHost", false);
 
+        mRoundBanner = findViewById(R.id.roundNumberBanner);
+
         //Will be initialized with words from firebase real-time database
         mMonikerList = new ArrayList<String>();
+        mCurrentMonikerList = new ArrayList<String>();
 
         mNumWordsCorrect = 0;
         mRoundNumber = 1;
@@ -75,6 +86,9 @@ public class CluegivingActivity extends AppCompatActivity {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference wordsRef = database.getReference(mGameDBPath + "/words");
 
+        UpdateDBTimer(mTimerLengthSeconds);
+        SetupTimerToListenForDBChanges();
+
         wordsRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
@@ -87,30 +101,59 @@ public class CluegivingActivity extends AppCompatActivity {
                         mMonikerList.add(word.getValue().toString());
                     }
 
+                    mCurrentMonikerList.addAll(mMonikerList);
+
                     //Randomize list before we start
                     Collections.shuffle(mMonikerList);
 
                     //Now that we have the words, we can initialize the number of words left in deck
                     mNumWordsInDeck = mMonikerList.size();
-
                     DecrementMonikersLeft();
-                    DisplayCurrentWord();
-                    StartTimer();
 
-                    ((TextView) findViewById(R.id.numGuessedCorrect)).setText("0");
-                    Log.d("Monikers", String.valueOf(task.getResult().getValue()));
+                    PromptForTurnStart();
                 }
             }
         });
     }
 
-    public void StartTimer() {
-        SetupTimerToListenForDBChanges();
+    private void PromptForTurnStart() {
+        new AlertDialog.Builder(CluegivingActivity.this)
+                .setTitle("Round " + mRoundNumber)
+                .setMessage("Start turn?")
 
+                // Specifying a listener allows you to take an action before dismissing the dialog.
+                // The dialog is automatically dismissed when a dialog button is clicked.
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        StartTurn();
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
+
+    public void StartTurn() {
+        ArrayList<String> newMonikerList = new ArrayList<String>();
+        for (int i = mCurrentMonikerIndex; i < mCurrentMonikerList.size(); ++i)
+        {
+            newMonikerList.add(mCurrentMonikerList.get(i));
+        }
+        mCurrentMonikerList = newMonikerList;
+        //Shuffle before starting
+        Collections.shuffle(mCurrentMonikerList);
+        mCurrentMonikerIndex = 0;
+
+        DisplayCurrentWord();
+        StartTimer();
+
+        mNumWordsCorrect = 0;
+        ((TextView) findViewById(R.id.numGuessedCorrect)).setText(String.valueOf(mNumWordsCorrect));
+    }
+
+    public void StartTimer() {
         //Only host will update the DB timer, others only read from it
         if (mAreWeHost)
         {
-            UpdateDBTimer(mTimerLengthSeconds);
             Log.d("Monikers", "Starting timer!");
 
             mTimer = new CountDownTimer(mTimerLengthSeconds * 1000, 1000) {
@@ -169,15 +212,15 @@ public class CluegivingActivity extends AppCompatActivity {
     //Called when a player hits the 'Skip' button
     public void SkipMoniker(View v) {
         //Move this word to the back of the list, so they will only hit it again if we're out of words
-        mMonikerList.add(mMonikerList.get(mCurrentMonikerIndex));
-        mMonikerList.remove(mCurrentMonikerIndex.intValue());
+        mCurrentMonikerList.add(mCurrentMonikerList.get(mCurrentMonikerIndex));
+        mCurrentMonikerList.remove(mCurrentMonikerIndex.intValue());
 
         DisplayCurrentWord();
     }
 
     //Called when a player hits the 'Correct' button
     public void CorrectMoniker(View v) {
-        if (mNumWordsInDeck == 0) { EndTurn(); EndRound(); return; }
+        if (mNumWordsInDeck == 0) { EndRound(); EndTurn(); return; }
         IncrementNumCorrect();
         DecrementMonikersLeft();
         ++mCurrentMonikerIndex;
@@ -187,17 +230,38 @@ public class CluegivingActivity extends AppCompatActivity {
     //Called when the round ends, due to the last moniker being guessed
     private void EndRound() {
         mTimer.cancel();
-        Toast.makeText(this, "Round over!", Toast.LENGTH_LONG).show();
+        mRoundNumber++;
+
+        if (mRoundNumber >= 4)
+        {
+            Toast.makeText(this, "Game over!", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(CluegivingActivity.this, HomeActivityWithNavDrawer.class);
+            startActivity(intent);
+        }
+        mRoundBanner.setText("Round " + String.valueOf(mRoundNumber));
+
+
+        //Randomize list before we start
+        Collections.shuffle(mMonikerList);
+        mCurrentMonikerList.clear();
+        mCurrentMonikerList.addAll(mMonikerList);
+        Log.d("Monikers", "Current Moniker list size is " + mCurrentMonikerList.size());
+
+        //Now that we have the words, we can initialize the number of words left in deck
+        mNumWordsInDeck = mCurrentMonikerList.size();
+        DecrementMonikersLeft();
+
+        mCurrentMonikerIndex = 0;
     }
 
     //Called when the turn ends, due to the timer running out, or the last moniker being guessed
     private void EndTurn() {
-        Toast.makeText(this, "Turn over!", Toast.LENGTH_LONG).show();
+        PromptForTurnStart();
     }
 
     //Change the text to display the word we are currently on
     private void DisplayCurrentWord() {
-        ((TextView) findViewById(R.id.monikerToGuess)).setText(mMonikerList.get(mCurrentMonikerIndex));
+        ((TextView) findViewById(R.id.monikerToGuess)).setText(mCurrentMonikerList.get(mCurrentMonikerIndex));
     }
 
     //Increment the number of words that have been gotten correct this round

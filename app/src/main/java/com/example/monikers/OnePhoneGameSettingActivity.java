@@ -63,8 +63,9 @@ public class OnePhoneGameSettingActivity extends AppCompatActivity {
                     Intent intent = new Intent(OnePhoneGameSettingActivity.this, AddWordActivity.class);
                     intent.putExtra("numOfPlayer", playerCount);
                     intent.putExtra("numOfCards", cardsCount);
-                    String wordsDBPath = "words/" + FirebaseAuth.getInstance().getCurrentUser().getUid();
-                    intent.putExtra("wordsDBPath", wordsDBPath);
+                    //Use user's uid as the game name
+                    String gameDBPath = "localGames/" + FirebaseAuth.getInstance().getCurrentUser().getUid();
+                    intent.putExtra("gameDBPath", gameDBPath);
                     startActivity(intent);
 
                 } else {
