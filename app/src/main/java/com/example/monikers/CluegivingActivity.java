@@ -296,9 +296,6 @@ public class CluegivingActivity extends AppCompatActivity {
 
         if (mRoundNumber >= 4) { return; }
 
-        mRoundBanner.setText("Round " + String.valueOf(mRoundNumber));
-
-
         //Randomize list before we start
         Collections.shuffle(mMonikerList);
         mCurrentMonikerList.clear();
@@ -333,6 +330,7 @@ public class CluegivingActivity extends AppCompatActivity {
                 {
                     GoBackToHomeScreen();
                 }
+                mRoundBanner.setText("Round " + String.valueOf(mRoundNumber));
             }
             @Override
             public void onCancelled (DatabaseError databaseError)

@@ -29,6 +29,7 @@ import java.util.Map;
 public class ClueguessingActivity extends AppCompatActivity {
     //The text view that has the timer countdown
     private TextView mTimerText;
+    private TextView mRoundBanner;
     //The actual timer counting down
     private CountDownTimer mTimer;
     private Integer mTimerLengthSeconds;
@@ -51,6 +52,8 @@ public class ClueguessingActivity extends AppCompatActivity {
         mGameDBPath = getIntent().getStringExtra("gameDBPath");
 
         mAreWeHost = getIntent().getBooleanExtra("areWeHost", false);
+
+        mRoundBanner = findViewById(R.id.roundNumberBanner);
 
         mMinutesLeft = 0L;
         mSecondsLeft = 0L;
@@ -127,6 +130,7 @@ public class ClueguessingActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot)
             {
                 mRoundNumber = (Long) dataSnapshot.getValue();
+                mRoundBanner.setText("Round " + String.valueOf(mRoundNumber));
                 if (mRoundNumber >= 4)
                 {
                     GoBackToHomeScreen();
