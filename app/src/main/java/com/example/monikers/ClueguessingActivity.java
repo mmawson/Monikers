@@ -3,6 +3,7 @@ package com.example.monikers;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -34,9 +35,12 @@ public class ClueguessingActivity extends AppCompatActivity {
     //True if we are the host of the game
     private boolean mAreWeHost;
     //The round number (1, 2, 3)
-    private Integer mRoundNumber;
+    private Long mRoundNumber;
     //Which team is currently giving clues and guessing (1 or 2)
     private Integer mActiveTeamNum;
+    //local variables that will be updated by the DB as the timer runs out
+    Long mMinutesLeft;
+    Long mSecondsLeft;
     String mGameDBPath;
 
     @Override
@@ -48,27 +52,35 @@ public class ClueguessingActivity extends AppCompatActivity {
 
         mAreWeHost = getIntent().getBooleanExtra("areWeHost", false);
 
-        mRoundNumber = 1;
+        mMinutesLeft = 0L;
+        mSecondsLeft = 0L;
+
+        mRoundNumber = 1L;
         mActiveTeamNum = 1;
         mTimerText = findViewById(R.id.timer);
 
         mTimerLengthSeconds = 30;
 
         SetupTimerToListenForDBChanges();
+        ListenForRoundNumberChange();
     }
 
     private void SetupTimerToListenForDBChanges(){
         // Get a reference to the Firebase database
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
-        DatabaseReference dbTimer = databaseReference.child(mGameDBPath).child("timeLeft");
+        DatabaseReference dbTimerSec = databaseReference.child(mGameDBPath).child("secondsLeft");
+        DatabaseReference dbTimerMin = databaseReference.child(mGameDBPath).child("minutesLeft");
 
-        ValueEventListener postListener = new ValueEventListener() {
+
+        ValueEventListener postListenerSec = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                Long timerEntry = (Long) dataSnapshot.getValue();
-                mTimerText.setText(timerEntry.toString());
+                mSecondsLeft = (Long) dataSnapshot.getValue();
+
+                String secondsStr = String.format("%02d", mSecondsLeft);
+                mTimerText.setText(mMinutesLeft.toString() + ":" + secondsStr);
             }
 
             @Override
@@ -77,7 +89,57 @@ public class ClueguessingActivity extends AppCompatActivity {
                 Log.w("Monikers", databaseError.toException());
             }
         };
-        dbTimer.addValueEventListener(postListener);
+        ValueEventListener postListenerMin = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                mMinutesLeft = (Long) dataSnapshot.getValue();
+                String secondsStr = String.format("%02d", mSecondsLeft);
+
+                mTimerText.setText(mMinutesLeft.toString() + ":" + secondsStr);
+            }
+
+            @Override
+            public void onCancelled (DatabaseError databaseError)
+            {
+                Log.w("Monikers", databaseError.toException());
+            }
+        };
+
+        dbTimerSec.addValueEventListener(postListenerSec);
+        dbTimerMin.addValueEventListener(postListenerMin);
+    }
+
+    private void GoBackToHomeScreen()
+    {
+        Intent intent = new Intent(this, HomeActivityWithNavDrawer.class);
+        startActivity(intent);
+    }
+
+    private void ListenForRoundNumberChange() {
+        // Get a reference to the Firebase database
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        DatabaseReference dbRoundNum = databaseReference.child(mGameDBPath).child("roundNum");
+
+        ValueEventListener postListenerRound = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                mRoundNumber = (Long) dataSnapshot.getValue();
+                if (mRoundNumber >= 4)
+                {
+                    GoBackToHomeScreen();
+                }
+            }
+
+            @Override
+            public void onCancelled (DatabaseError databaseError)
+            {
+                Log.w("Monikers", databaseError.toException());
+            }
+        };
+        dbRoundNum.addValueEventListener(postListenerRound);
     }
 
     //Called when the round ends, due to the last moniker being guessed

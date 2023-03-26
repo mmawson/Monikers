@@ -101,6 +101,8 @@ public class HomeActivityWithNavDrawer extends AppCompatActivity
     public void StartOnePhoneGame(View v) {
         //For a one phone game, we use the user's uid to create a unique game name
         Intent intent = new Intent(this, OnePhoneGameSettingActivity.class);
+        String gameDBPath = "localGames/" + FirebaseAuth.getInstance().getCurrentUser().getUid();
+        intent.putExtra("gameDBPath", gameDBPath);
         startActivity(intent);
     }
 

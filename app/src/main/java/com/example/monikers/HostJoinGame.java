@@ -91,6 +91,7 @@ public class HostJoinGame extends AppCompatActivity {
         Intent intent = new Intent(this, AddWordActivity.class);
         String gameDBPath = "games/" + gameName;
         intent.putExtra("gameDBPath", gameDBPath);
+        intent.putExtra("localGame", false);
         intent.putExtra("areWeHost", areWeHost);
         startActivity(intent);
     }

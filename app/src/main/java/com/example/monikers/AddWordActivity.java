@@ -1,9 +1,11 @@
 package com.example.monikers;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,6 +13,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class AddWordActivity extends AppCompatActivity {
 
@@ -43,6 +48,8 @@ public class AddWordActivity extends AppCompatActivity {
     String mGameDBPath;
     //True if we are the host of the game
     boolean mAreWeHost;
+    //The amount of time per turn, to pass to Cluegiving Activity
+    String mTimePerTurn;
     private ArrayList<String> wordList = new ArrayList<String>();
 
     @Override
@@ -53,7 +60,25 @@ public class AddWordActivity extends AppCompatActivity {
         mGameDBPath = getIntent().getStringExtra("gameDBPath");
         mWordsDBPath = mGameDBPath + "/words";
 
+        //Could use for getting the custom card count in a multiphone game
+//        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference numCardsRef = database.getReference(mGameDBPath + "/numCardsPerPlayer");
+
+//        numCardsRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<DataSnapshot> task) {
+//                if (!task.isSuccessful()) {
+//                    Log.e("Monikers", "Error getting data", task.getException());
+//                }
+//                else {
+//                    DataSnapshot data = task.getResult();
+//                    cardsCount = (int) data.getValue();
+//                }
+//            }
+//        });
+
         mAreWeHost = getIntent().getBooleanExtra("areWeHost", true);
+        mTimePerTurn = getIntent().getStringExtra("timePerTurn");
 
         editTextWord = findViewById(R.id.editText_word);
         textViewCounter = findViewById(R.id.textView_counter);
@@ -66,7 +91,8 @@ public class AddWordActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         playerCount = intent.getIntExtra("numOfPlayer", 1);
-        cardsCount = intent.getIntExtra("numOfCards", 5);
+
+        cardsCount = intent.getIntExtra("numCards", 5);
         maxWordsTotal = playerCount * cardsCount;
         totalWords = maxWordsTotal;
 
@@ -151,6 +177,7 @@ public class AddWordActivity extends AppCompatActivity {
                 if (mAreWeHost)
                 {
                     intent = new Intent(AddWordActivity.this, CluegivingActivity.class);
+                    intent.putExtra("timePerTurn", mTimePerTurn);
                 }
                 else
                 {

@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +14,11 @@ import android.widget.Toast;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class OnePhoneGameSettingActivity extends AppCompatActivity {
 
@@ -22,6 +28,9 @@ public class OnePhoneGameSettingActivity extends AppCompatActivity {
     Button nextButton;
     private int playerCount;
     private int cardsCount;
+    boolean mAreWeHost;
+    String mGameDBPath;
+    boolean mLocalGame;
 
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -34,6 +43,11 @@ public class OnePhoneGameSettingActivity extends AppCompatActivity {
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+
+        mGameDBPath = getIntent().getStringExtra("gameDBPath");
+        mLocalGame = getIntent().getBooleanExtra("localGame", true);
+
+        mAreWeHost = getIntent().getBooleanExtra("areWeHost", true);
 
         playerCountEditText = findViewById(R.id.playerCount_et);
         cardsCountEditText = findViewById(R.id.cards_et);
@@ -61,11 +75,34 @@ public class OnePhoneGameSettingActivity extends AppCompatActivity {
                     // Start game with playerCount number of players
 
                     Intent intent = new Intent(OnePhoneGameSettingActivity.this, AddWordActivity.class);
-                    intent.putExtra("numOfPlayer", playerCount);
-                    intent.putExtra("numOfCards", cardsCount);
-                    //Use user's uid as the game name
-                    String gameDBPath = "localGames/" + FirebaseAuth.getInstance().getCurrentUser().getUid();
-                    intent.putExtra("gameDBPath", gameDBPath);
+
+
+                    if (mLocalGame)
+                    {
+                        intent.putExtra("numOfPlayer", playerCount);
+                    }
+                    else
+                    {
+                        //For non-local game, each user should only be entering the amount of words for 1 player
+                        intent.putExtra("numOfPlayer", 1);
+                    }
+
+                    //Could be used for custom card count in multiphone game
+                    //Put numOfCards in DB
+//                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+//
+//                    DatabaseReference thisGame = databaseReference.child(mGameDBPath);
+
+
+//                    Map<String, Object> dbCardsNum = new HashMap();
+//                    dbCardsNum.put("numCardsPerPlayer", cardsCount);
+//
+//                    thisGame.push();
+//                    thisGame.updateChildren(dbCardsNum);
+
+                    intent.putExtra("numCards", cardsCount);
+                    intent.putExtra("timePerTurn", timeSelect.getSelectedItem().toString());
+                    intent.putExtra("gameDBPath", mGameDBPath);
                     startActivity(intent);
 
                 } else {

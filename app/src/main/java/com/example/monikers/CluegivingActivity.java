@@ -42,15 +42,21 @@ public class CluegivingActivity extends AppCompatActivity {
     //How many words have been guessed correctly this TURN
     private Integer mNumWordsCorrect;
     //The round number (1, 2, 3)
-    private Integer mRoundNumber;
+    private Long mRoundNumber;
     //Which team is currently giving clues and guessing (1 or 2)
     private Integer mActiveTeamNum;
     //The Moniker that the player is currently giving clues for (by index)
     private Integer mCurrentMonikerIndex;
     private Integer mTimerLengthSeconds;
     private TextView mRoundBanner;
+    //Amount of time you get for a turn
+    String mTimePerTurn;
     //True if we are the host of the game
     private boolean mAreWeHost;
+
+    //local variables that will be updated by the DB as the timer runs out
+    Long mMinutesLeft;
+    Long mSecondsLeft;
     String mGameDBPath;
 
     @Override
@@ -61,24 +67,40 @@ public class CluegivingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_cluegiving);
 
         mGameDBPath = getIntent().getStringExtra("gameDBPath");
+        mTimePerTurn = getIntent().getStringExtra("timePerTurn");
+        if (mTimePerTurn == null)
+        {
+            mTimePerTurn = "1:00";
+        }
 
         mAreWeHost = getIntent().getBooleanExtra("areWeHost", false);
 
         mRoundBanner = findViewById(R.id.roundNumberBanner);
+
+        mMinutesLeft = 0L;
+        mSecondsLeft = 0L;
 
         //Will be initialized with words from firebase real-time database
         mMonikerList = new ArrayList<String>();
         mCurrentMonikerList = new ArrayList<String>();
 
         mNumWordsCorrect = 0;
-        mRoundNumber = 1;
+        mRoundNumber = 0L;
+        IncrementRoundNumber();
         mActiveTeamNum = 1;
         mCurrentMonikerIndex = 0;
         mTimerText = findViewById(R.id.timer);
 
-        mTimerLengthSeconds = 30;
-
         SetupGame();
+    }
+
+    private void SetInitialTime() {
+        String[] splitTime = mTimePerTurn.split(":");
+
+        Integer minutes = Integer.parseInt(splitTime[0]);
+        Integer seconds = Integer.parseInt(splitTime[1]);
+
+        UpdateDBTimer(minutes, seconds);
     }
 
     private void SetupGame() {
@@ -86,8 +108,10 @@ public class CluegivingActivity extends AppCompatActivity {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference wordsRef = database.getReference(mGameDBPath + "/words");
 
-        UpdateDBTimer(mTimerLengthSeconds);
+        SetInitialTime();
+
         SetupTimerToListenForDBChanges();
+        ListenForRoundNumberChange();
 
         wordsRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
@@ -144,27 +168,35 @@ public class CluegivingActivity extends AppCompatActivity {
         mCurrentMonikerIndex = 0;
 
         DisplayCurrentWord();
-        StartTimer();
+
+        String[] splitTime = mTimePerTurn.split(":");
+        Integer minutes = Integer.parseInt(splitTime[0]);
+        Integer seconds = Integer.parseInt(splitTime[1]);
+        StartTimer(minutes, seconds);
 
         mNumWordsCorrect = 0;
         ((TextView) findViewById(R.id.numGuessedCorrect)).setText(String.valueOf(mNumWordsCorrect));
     }
 
-    public void StartTimer() {
+    public void StartTimer(Integer minutes, Integer seconds) {
         //Only host will update the DB timer, others only read from it
         if (mAreWeHost)
         {
             Log.d("Monikers", "Starting timer!");
 
-            mTimer = new CountDownTimer(mTimerLengthSeconds * 1000, 1000) {
+            mTimer = new CountDownTimer((minutes * 60 + seconds) * 1000, 1000) {
                 public void onTick(long millisUntilFinished) {
-                    Double timeLeft = Math.ceil(millisUntilFinished / 1000.0);
-                    Integer timeLeftInt = timeLeft.intValue();
-                    UpdateDBTimer(timeLeftInt);
+                    Double secLeft = Math.ceil(millisUntilFinished / 1000.0);
+                    Integer secLeftInt = secLeft.intValue() % 60;
+
+                    Double minLeft = Math.floor(secLeft.intValue() / 60);
+                    Integer minLeftInt = minLeft.intValue();
+
+                    UpdateDBTimer(minLeftInt, secLeftInt);
                 }
 
                 public void onFinish() {
-                    UpdateDBTimer(0);
+                    UpdateDBTimer(0, 0);
                     EndTurn();
                 }
             };
@@ -172,32 +204,40 @@ public class CluegivingActivity extends AppCompatActivity {
         }
     }
 
-    private void UpdateDBTimer(Integer timeLeft)
+    private void UpdateDBTimer(Integer minLeft, Integer secLeft)
     {
         // Get a reference to the Firebase database
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
         DatabaseReference thisGame = databaseReference.child(mGameDBPath);
 
-        Map<String, Object> dbTimeLeft = new HashMap();
-        dbTimeLeft.put("timeLeft", timeLeft);
+        Map<String, Object> dbSecLeft = new HashMap();
+        dbSecLeft.put("secondsLeft", secLeft);
+
+        Map<String, Object> dbMinLeft = new HashMap();
+        dbMinLeft.put("minutesLeft", minLeft);
 
         thisGame.push();
-        thisGame.updateChildren(dbTimeLeft);
+        thisGame.updateChildren(dbSecLeft);
+        thisGame.updateChildren(dbMinLeft);
     }
 
     private void SetupTimerToListenForDBChanges(){
         // Get a reference to the Firebase database
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
-        DatabaseReference dbTimer = databaseReference.child(mGameDBPath).child("timeLeft");
+        DatabaseReference dbTimerSec = databaseReference.child(mGameDBPath).child("secondsLeft");
+        DatabaseReference dbTimerMin = databaseReference.child(mGameDBPath).child("minutesLeft");
 
-        ValueEventListener postListener = new ValueEventListener() {
+
+        ValueEventListener postListenerSec = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                Long timerEntry = (Long) dataSnapshot.getValue();
-                mTimerText.setText(timerEntry.toString());
+                mSecondsLeft = (Long) dataSnapshot.getValue();
+
+                String secondsStr = String.format("%02d", mSecondsLeft);
+                mTimerText.setText(mMinutesLeft.toString() + ":" + secondsStr);
             }
 
             @Override
@@ -206,7 +246,25 @@ public class CluegivingActivity extends AppCompatActivity {
                 Log.w("Monikers", databaseError.toException());
             }
         };
-        dbTimer.addValueEventListener(postListener);
+        ValueEventListener postListenerMin = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                mMinutesLeft = (Long) dataSnapshot.getValue();
+                String secondsStr = String.format("%02d", mSecondsLeft);
+
+                mTimerText.setText(mMinutesLeft.toString() + ":" + secondsStr);
+            }
+
+            @Override
+            public void onCancelled (DatabaseError databaseError)
+            {
+                Log.w("Monikers", databaseError.toException());
+            }
+        };
+
+        dbTimerSec.addValueEventListener(postListenerSec);
+        dbTimerMin.addValueEventListener(postListenerMin);
     }
 
     //Called when a player hits the 'Skip' button
@@ -220,7 +278,11 @@ public class CluegivingActivity extends AppCompatActivity {
 
     //Called when a player hits the 'Correct' button
     public void CorrectMoniker(View v) {
-        if (mNumWordsInDeck == 0) { EndRound(); EndTurn(); return; }
+        if (mNumWordsInDeck == 0) {
+            EndRound();
+            if (mRoundNumber >= 4) {return;}
+            EndTurn();
+            return; }
         IncrementNumCorrect();
         DecrementMonikersLeft();
         ++mCurrentMonikerIndex;
@@ -230,14 +292,10 @@ public class CluegivingActivity extends AppCompatActivity {
     //Called when the round ends, due to the last moniker being guessed
     private void EndRound() {
         mTimer.cancel();
-        mRoundNumber++;
+        IncrementRoundNumber();
 
-        if (mRoundNumber >= 4)
-        {
-            Toast.makeText(this, "Game over!", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(CluegivingActivity.this, HomeActivityWithNavDrawer.class);
-            startActivity(intent);
-        }
+        if (mRoundNumber >= 4) { return; }
+
         mRoundBanner.setText("Round " + String.valueOf(mRoundNumber));
 
 
@@ -252,6 +310,51 @@ public class CluegivingActivity extends AppCompatActivity {
         DecrementMonikersLeft();
 
         mCurrentMonikerIndex = 0;
+    }
+
+    private void GoBackToHomeScreen()
+    {
+        Intent intent = new Intent(this, HomeActivityWithNavDrawer.class);
+        startActivity(intent);
+    }
+
+    private void ListenForRoundNumberChange() {
+        // Get a reference to the Firebase database
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        DatabaseReference dbRoundNum = databaseReference.child(mGameDBPath).child("roundNum");
+
+        ValueEventListener postListenerRound = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                mRoundNumber = (Long) dataSnapshot.getValue();
+                if (mRoundNumber >= 4)
+                {
+                    GoBackToHomeScreen();
+                }
+            }
+            @Override
+            public void onCancelled (DatabaseError databaseError)
+            {
+                Log.w("Monikers", databaseError.toException());
+            }
+        };
+        dbRoundNum.addValueEventListener(postListenerRound);
+    }
+
+    private void IncrementRoundNumber() {
+        mRoundNumber += 1;
+        // Get a reference to the Firebase database
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        DatabaseReference thisGame = databaseReference.child(mGameDBPath);
+
+        Map<String, Object> dbRoundNum = new HashMap();
+        dbRoundNum.put("roundNum", mRoundNumber);
+
+        thisGame.push();
+        thisGame.updateChildren(dbRoundNum);
     }
 
     //Called when the turn ends, due to the timer running out, or the last moniker being guessed
