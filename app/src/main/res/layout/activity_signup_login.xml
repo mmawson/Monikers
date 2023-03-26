@@ -12,11 +12,10 @@
 
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="232dp"
-        android:layout_height="276dp"
+        android:layout_width="87dp"
+        android:layout_height="82dp"
         android:paddingBottom="10dp"
-
-        android:src="@drawable/img"
+        android:src="@drawable/baseline_assignment_ind_24"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -34,12 +33,10 @@
             android:layout_height="wrap_content"
             android:hint="Email"
             android:textColor="@color/white">
-
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/emailText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -47,12 +44,10 @@
             android:layout_height="wrap_content"
             android:hint="Password"
             android:textColor="@color/white">
-
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/passwordText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -60,14 +55,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Display Name">
-
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/displayNameText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/birthdayLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Birthday">
+
+            <EditText
+                android:id="@+id/birthdayText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:onClick="showDatePickerDialog"/>
 
         </com.google.android.material.textfield.TextInputLayout>
-
         <Button
             android:id="@+id/singupBtn"
             android:layout_width="match_parent"
@@ -76,10 +82,7 @@
             android:onClick="Signup"
             android:text="SIGNUP"
             android:textColor="@color/color_offwhite"
-            android:textSize="20sp">
-
-        </Button>
-
+            android:textSize="15sp"/>
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -88,17 +91,20 @@
             android:onClick="Login"
             android:text="LOGIN"
             android:textColor="@color/color_offwhite"
-            android:textSize="20sp">
+            android:textSize="15sp"/>
 
-        </Button>
-
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/googleBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp">
+        </com.google.android.gms.common.SignInButton>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:orientation="horizontal"
             android:weightSum="2">
-
             <Button
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -108,10 +114,7 @@
                 android:onClick="ResetPassword"
                 android:text="Reset Password"
                 android:textColor="@color/color_offwhite"
-                android:textSize="12sp">
-
-            </Button>
-
+                android:textSize="12sp"/>
             <Button
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -121,21 +124,8 @@
                 android:onClick="sendEmailVerification"
                 android:text="Resend Email Verification"
                 android:textColor="@color/color_offwhite"
-                android:textSize="12sp">
-
-            </Button>
+                android:textSize="12sp"/>
         </LinearLayout>
     </LinearLayout>
-
-    <Button
-        android:id="@+id/create_new_user"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Create New User"
-        android:background="@color/transparent"
-        android:onClick="restoreUI"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
 

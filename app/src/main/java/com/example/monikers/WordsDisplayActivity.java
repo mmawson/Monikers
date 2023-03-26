@@ -1,12 +1,14 @@
 package com.example.monikers;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -38,6 +40,18 @@ public class WordsDisplayActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
+        // Create an AlertDialog with a custom layout for showing progress
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        builder.setView(R.layout.progress_layout);
+        final AlertDialog dialog = builder.create();
+
+        // Show the AlertDialog before fetching the word list
+        dialog.show();
+
+        // Hide the RecyclerView until the word list is loaded and the adapter is set
+        recyclerView.setVisibility(View.GONE);
+
         Intent intent = getIntent();
         displayWordsList = intent.getStringArrayListExtra("WordList");
 
@@ -54,6 +68,14 @@ public class WordsDisplayActivity extends AppCompatActivity {
             }
         });
 
-
+        // Delay the dismissal of the AlertDialog for 8 seconds
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Dismiss the AlertDialog and show the RecyclerView
+                dialog.dismiss();
+                recyclerView.setVisibility(View.VISIBLE);
+            }
+        }, 5000);
     }
 }

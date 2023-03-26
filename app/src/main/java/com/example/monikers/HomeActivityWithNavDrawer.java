@@ -115,7 +115,7 @@ public class HomeActivityWithNavDrawer extends AppCompatActivity
     }
 
     public void StartSettings(View v) {
-        Intent intent = new Intent(this, WordsDisplayActivity.class);
+        Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
 

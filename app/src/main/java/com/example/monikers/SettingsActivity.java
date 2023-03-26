@@ -4,11 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -19,11 +21,16 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Calendar;
+import java.util.Locale;
+
 public class SettingsActivity extends AppCompatActivity {
 
     private EditText editTextName;
     private EditText editTextEmail;
     private EditText editTextPassword;
+    private EditText editTextBirthday;
+    private String birthday;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +40,30 @@ public class SettingsActivity extends AppCompatActivity {
         editTextName = findViewById(R.id.edit_text_name);
         editTextEmail = findViewById(R.id.edit_text_email);
         editTextPassword = findViewById(R.id.edit_text_password);
-
+        editTextBirthday = findViewById(R.id.edit_text_birthday);
+        editTextBirthday.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                DatePickerDialog datePickerDialog = new DatePickerDialog(SettingsActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                        // Set the selected date to the birthday text field
+                        birthday = String.format(Locale.getDefault(), "%02d/%02d/%d", month + 1, day, year);
+                        EditText birthdayText = findViewById(R.id.birthdayText);
+                        birthdayText.setText(birthday);
+                    }
+                },
+                        year, month, day
+                );
+                // Set the maximum date to today's date
+                datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+                datePickerDialog.show();
+            }
+        });
         Button buttonSave = findViewById(R.id.button_save);
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,14 +93,14 @@ public class SettingsActivity extends AppCompatActivity {
                         String uid = user.getUid();
 
                         // Update the user's name
-                        databaseReference.child("users").child(uid).child("name").setValue(name);
+                        databaseReference.child("Users").child(uid).child("name").setValue(name);
 
                         // Update the user's email
                         user.updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
-                                    databaseReference.child("users").child(uid).child("email").setValue(email);
+                                    databaseReference.child("Users").child(uid).child("email").setValue(email);
                                 } else {
                                     // Handle the error
                                     Toast.makeText(SettingsActivity.this, "Error updating email", Toast.LENGTH_SHORT).show();
@@ -95,6 +125,11 @@ public class SettingsActivity extends AppCompatActivity {
                             Toast.makeText(SettingsActivity.this, "Changes saved", Toast.LENGTH_SHORT).show();
                             finish();
                         }
+                        // Update the user's birthday
+                        databaseReference.child("Users").child(uid).child("birthday").setValue(birthday);
+
+                        Toast.makeText(SettingsActivity.this, "Changes saved", Toast.LENGTH_SHORT).show();
+                        finish();
                     }
                 })
                 .setNegativeButton("No", null)

@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:text="Change Username"
+        android:text="Change Display Name"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -21,8 +21,8 @@
         android:id="@+id/edit_text_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:hint="Enter your name"
+        android:paddingLeft="16dp"
+        android:hint="Enter your display name"
         android:inputType="text"
         android:maxLines="1" />
 
@@ -38,7 +38,7 @@
         android:id="@+id/edit_text_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:paddingLeft="16dp"
         android:hint="Enter your email"
         android:inputType="textEmailAddress"
         android:maxLines="1" />
@@ -55,16 +55,32 @@
         android:id="@+id/edit_text_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:paddingLeft="16dp"
         android:hint="Enter your new password"
         android:inputType="textPassword"
+        android:maxLines="1" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="Change Birthday"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/edit_text_birthday"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:hint="Select your birthday"
+        android:inputType="date"
         android:maxLines="1" />
 
     <Button
         android:id="@+id/button_save"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
         android:text="Save Changes" />
 
 </LinearLayout>

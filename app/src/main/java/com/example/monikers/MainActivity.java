@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
             public void onFinish() {
                 if(currentUser==null){
                     Toast.makeText(MainActivity.this, "No user found", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(MainActivity.this, FirebaseUIActivity.class));
+                    startActivity(new Intent(MainActivity.this, SignupLogin.class));
                     finish();
                 }
                 else{
