@@ -125,6 +125,7 @@ public class AddWordActivity extends AppCompatActivity {
                         textViewTotalWords.setText("Number of remaining words: " + totalWords);
                         int progress = (int) (((float) wordCount / (float) maxWordsTotal) * 100);
                         progressBar.setProgress(progress);
+                        editTextWord.setText("");
 
                         // Show Snackbar with added word and Undo option
                         Snackbar snackbar = Snackbar.make(v, "Word added: " + "\"" + word + "\"", Snackbar.LENGTH_LONG);

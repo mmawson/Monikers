@@ -309,7 +309,8 @@ public class CluegivingActivity extends AppCompatActivity {
 
     private void GoBackToHomeScreen()
     {
-        Intent intent = new Intent(this, HomeActivityWithNavDrawer.class);
+        Intent intent = new Intent(this, WordsDisplayActivity.class);
+        intent.putExtra("WordList",mMonikerList);
         startActivity(intent);
     }
 
