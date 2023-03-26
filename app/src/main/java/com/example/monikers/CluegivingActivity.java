@@ -61,8 +61,6 @@ public class CluegivingActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //TODO: Pass Huiying's settings into this Activity. Also, push a 'game is over' to the DB so clueguesser games also go back to home screen at end
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cluegiving);
 

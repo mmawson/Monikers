@@ -63,6 +63,10 @@
         <activity
             android:name=".SignupLogin"
             android:exported="false" />
+        <service
+            android:name=".MusicPlayerService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

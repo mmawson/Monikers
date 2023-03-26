@@ -66,6 +66,9 @@ public class HomeActivityWithNavDrawer extends AppCompatActivity
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
 
+        Intent intent = new Intent(this, MusicPlayerService.class);
+        startService(intent);
+
     }
 
     @Override
