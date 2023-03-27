@@ -3,6 +3,8 @@ package com.example.monikers;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.widget.Toast;
@@ -20,8 +22,6 @@ public class MainActivity extends AppCompatActivity {
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-
-
     }
 
     @Override

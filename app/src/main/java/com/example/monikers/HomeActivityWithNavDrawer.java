@@ -9,6 +9,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +28,7 @@ public class HomeActivityWithNavDrawer extends AppCompatActivity
     Toolbar toolbar;
     NavigationView navigationView;
     DrawerLayout drawerLayout;
+    MyBroadcastReceiver myBroadcastReceiver = new MyBroadcastReceiver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +71,21 @@ public class HomeActivityWithNavDrawer extends AppCompatActivity
 
         Intent intent = new Intent(this, MusicPlayerService.class);
         startService(intent);
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        intentFilter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        this.registerReceiver(myBroadcastReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        this.unregisterReceiver(myBroadcastReceiver);
     }
 
     @Override
