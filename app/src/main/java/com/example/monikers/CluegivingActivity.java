@@ -82,6 +82,16 @@ public class CluegivingActivity extends AppCompatActivity {
         mMonikerList = new ArrayList<String>();
         mCurrentMonikerList = new ArrayList<String>();
 
+        ((TextView) findViewById(R.id.monikerToGuess)).setOnTouchListener(new OnSwipeTouchListener(CluegivingActivity.this) {
+            public void onSwipeRight() {
+                CorrectMoniker(new View(getApplicationContext()));
+            }
+            public void onSwipeLeft() {
+                SkipMoniker(new View(getApplicationContext()));
+            }
+        });
+
+
         mNumWordsCorrect = 0;
         mRoundNumber = 0L;
         IncrementRoundNumber();
