@@ -88,6 +88,7 @@ public class AddWordActivity extends AppCompatActivity {
         homeButton = findViewById(R.id.homeButton);
         progressBar = findViewById(R.id.progressBar);
         buttonNext.setEnabled(false);
+        buttonSave.setEnabled(true);
 
         Intent intent = getIntent();
         playerCount = intent.getIntExtra("numOfPlayer", 1);
@@ -147,6 +148,7 @@ public class AddWordActivity extends AppCompatActivity {
 
                         if (wordCount == maxWordsTotal) {
                             buttonNext.setEnabled(true);
+                            buttonSave.setEnabled(false);
                             Toast.makeText(AddWordActivity.this, "Please select 'NEXT' to enter game", Toast.LENGTH_SHORT).show();
                             // Send the array of words to the database
                             databaseReference.child(mWordsDBPath).setValue(wordList);

@@ -3,6 +3,7 @@ package com.example.monikers;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,6 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class WordsDisplayActivity extends AppCompatActivity {
 
@@ -28,6 +30,7 @@ public class WordsDisplayActivity extends AppCompatActivity {
     private List<String> displayWordsList;
     MyRecyclerAdapter adapter;
     FloatingActionButton home_btn;
+    SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +39,8 @@ public class WordsDisplayActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recycler_view);
         home_btn = findViewById(R.id.homeButton);
+        searchView = findViewById(R.id.search);
+        searchView.clearFocus();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -68,6 +73,18 @@ public class WordsDisplayActivity extends AppCompatActivity {
             }
         });
 
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                searchList(newText);
+                return true;
+            }
+        });
+
         // Delay the dismissal of the AlertDialog for 8 seconds
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -77,5 +94,18 @@ public class WordsDisplayActivity extends AppCompatActivity {
                 recyclerView.setVisibility(View.VISIBLE);
             }
         }, 2000);
+    }
+    public void searchList (String text){
+        ArrayList<String> searchList = new ArrayList<>();
+        if(text.isEmpty()){
+            searchList.addAll(displayWordsList);
+        } else {
+            for (String word : displayWordsList) {
+                if (word.toLowerCase().contains(text.toLowerCase())) {
+                    searchList.add(word);
+                }
+            }
+        }
+        adapter.searchData(searchList);
     }
 }
