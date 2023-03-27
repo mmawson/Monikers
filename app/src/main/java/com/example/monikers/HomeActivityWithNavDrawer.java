@@ -145,6 +145,15 @@ public class HomeActivityWithNavDrawer extends AppCompatActivity
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.share:
+                Intent share = new Intent(Intent.ACTION_SEND);
+                share.setType("text/plain");
+                String Body = "Download Monikers and Play with Me!";
+                String Sub = "http://play.google.com/monikers";
+                share.putExtra(Intent.EXTRA_TEXT, Body);
+                share.putExtra(Intent.EXTRA_TEXT, Sub);
+                startActivity(Intent.createChooser(share, "Share!"));
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
