@@ -149,7 +149,7 @@ public class HomeActivityWithNavDrawer extends AppCompatActivity
                 Intent share = new Intent(Intent.ACTION_SEND);
                 share.setType("text/plain");
                 String Body = "Download Monikers and Play with Me!";
-                String Sub = "http://play.google.com/monikers";
+                String Sub = "Download: http://play.google.com/monikers\nVisit Us: https://joannawu0508.wixsite.com/monikers";
                 share.putExtra(Intent.EXTRA_TEXT, Body);
                 share.putExtra(Intent.EXTRA_TEXT, Sub);
                 startActivity(Intent.createChooser(share, "Share!"));
