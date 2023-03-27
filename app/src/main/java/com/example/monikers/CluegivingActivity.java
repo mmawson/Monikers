@@ -2,10 +2,21 @@ package com.example.monikers;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -29,6 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CluegivingActivity extends AppCompatActivity {
+    static int REQUEST_FOR_POST_NOTIFICATIONS = 0011;
     //Full list of words we're playing with
     private ArrayList<String> mMonikerList;
     //Subset of the Monikers being used for this turn
@@ -41,6 +53,7 @@ public class CluegivingActivity extends AppCompatActivity {
     private Integer mNumWordsInDeck;
     //How many words have been guessed correctly this TURN
     private Integer mNumWordsCorrect;
+    private boolean mPostPermissionsGranted;
     //The round number (1, 2, 3)
     private Long mRoundNumber;
     //Which team is currently giving clues and guessing (1 or 2)
@@ -50,6 +63,7 @@ public class CluegivingActivity extends AppCompatActivity {
     private Integer mTimerLengthSeconds;
     private TextView mRoundBanner;
     //Amount of time you get for a turn
+    Integer mNotificationId;
     String mTimePerTurn;
     //True if we are the host of the game
     private boolean mAreWeHost;
@@ -63,6 +77,9 @@ public class CluegivingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cluegiving);
+
+        mPostPermissionsGranted = false;
+        mNotificationId = 0;
 
         mGameDBPath = getIntent().getStringExtra("gameDBPath");
         mTimePerTurn = getIntent().getStringExtra("timePerTurn");
@@ -99,7 +116,68 @@ public class CluegivingActivity extends AppCompatActivity {
         mCurrentMonikerIndex = 0;
         mTimerText = findViewById(R.id.timer);
 
+        RequestNotificationPermissions();
         SetupGame();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && requestCode == REQUEST_FOR_POST_NOTIFICATIONS) {
+            if (ContextCompat.checkSelfPermission(getBaseContext(),
+                    android.Manifest.permission.POST_NOTIFICATIONS)
+                    == PackageManager.PERMISSION_GRANTED) {
+                mPostPermissionsGranted = true;
+            }
+        } else {
+            Toast.makeText(this, "No notifications will be used", Toast.LENGTH_LONG).show();
+            mPostPermissionsGranted = false;
+        }
+
+    }
+    private void RequestNotificationPermissions() {
+        if (ContextCompat.checkSelfPermission(getBaseContext(),
+                Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                    REQUEST_FOR_POST_NOTIFICATIONS);
+        }
+    }
+
+    private void NotifyUserOfTurnStart() {
+//        //Only one notification should be up at a time, so cancel any previous one
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//        mNotificationManager.cancel(mNotificationId);
+
+        Intent resultIntent = new Intent(this, CluegivingActivity.class);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(HomeActivityWithNavDrawer.class);
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_IMMUTABLE);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setContentTitle("Team " + mActiveTeamNum + " Turn!")
+                .setContentText("It is Team " + mActiveTeamNum + "'s turn").setAutoCancel(true);
+        mBuilder.setContentIntent(resultPendingIntent);
+        mBuilder.setPriority(NotificationCompat.PRIORITY_MAX);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            Log.d("Monikers", "Creating notification channel");
+            String channelId = "my_channel_id";
+            NotificationChannel channel = new NotificationChannel(
+                    channelId,
+                    "Channel title",
+                    NotificationManager.IMPORTANCE_HIGH);
+            channel.setDescription("This is a default channel for notifications");
+            mNotificationManager.createNotificationChannel(channel);
+            mBuilder.setChannelId(channelId);
+        }
+
+        mNotificationManager.notify(mNotificationId, mBuilder.build());
+        Log.d("Monikers", "Notifying user of turn start");
     }
 
     private void SetInitialTime() {
@@ -150,7 +228,7 @@ public class CluegivingActivity extends AppCompatActivity {
 
     private void PromptForTurnStart() {
         new AlertDialog.Builder(CluegivingActivity.this)
-                .setTitle("Round " + mRoundNumber)
+                .setTitle("Round " + mRoundNumber + " : " + "Team " + String.valueOf(mActiveTeamNum))
                 .setMessage("Start turn?")
 
                 // Specifying a listener allows you to take an action before dismissing the dialog.
@@ -165,6 +243,9 @@ public class CluegivingActivity extends AppCompatActivity {
     }
 
     public void StartTurn() {
+        if (mPostPermissionsGranted) { NotifyUserOfTurnStart(); }
+        mActiveTeamNum = (mActiveTeamNum % 2) + 1;
+
         ArrayList<String> newMonikerList = new ArrayList<String>();
         for (int i = mCurrentMonikerIndex; i < mCurrentMonikerList.size(); ++i)
         {
