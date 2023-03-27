@@ -76,6 +76,6 @@ public class WordsDisplayActivity extends AppCompatActivity {
                 dialog.dismiss();
                 recyclerView.setVisibility(View.VISIBLE);
             }
-        }, 5000);
+        }, 2000);
     }
 }

@@ -10,6 +10,9 @@ import android.os.CountDownTimer;
 import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
@@ -28,9 +31,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         new CountDownTimer(3000, 1000) {
-
             public void onTick(long millisUntilFinished) {
-
             }
 
             public void onFinish() {
@@ -40,15 +41,8 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                 }
                 else{
-                    // if(currentUser.isEmailVerified()) {
-                    //Toast.makeText(MainActivity.this, "User already signed in", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(MainActivity.this, HomeActivityWithNavDrawer.class));
                     finish();
-                    // }
-                    // else{
-                    // Toast.makeText(MainActivity.this, "Please verify your email and login.", Toast.LENGTH_SHORT).show();
-                    // startActivity(new Intent(MainActivity.this, SignupLogin.class));
-                    // finish();
                 }
             }
 

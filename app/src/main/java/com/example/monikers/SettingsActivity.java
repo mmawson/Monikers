@@ -93,7 +93,7 @@ public class SettingsActivity extends AppCompatActivity {
                         String uid = user.getUid();
 
                         // Update the user's name
-                        databaseReference.child("Users").child(uid).child("name").setValue(name);
+                        databaseReference.child("Users").child(uid).child("displayname").setValue(name);
 
                         // Update the user's email
                         user.updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
