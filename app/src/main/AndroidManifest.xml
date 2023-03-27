@@ -22,6 +22,9 @@
         android:theme="@style/Theme.Monikers"
         tools:targetApi="31">
         <activity
+            android:name=".ContactUsActivity"
+            android:exported="false" />
+        <activity
             android:name=".WordsDisplayActivity"
             android:exported="false" />
         <activity

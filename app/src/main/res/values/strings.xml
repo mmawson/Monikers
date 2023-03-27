@@ -9,6 +9,8 @@
     <string name="ndopen" translatable="false">Navigation Drawer Open</string>
     <string name="ndclose" translatable="false">Navigation Drawer Closed</string>
 
+    <string name="Contact" translatable="false">We are students at Syracuse University\n
+    Bryan Sweeney, Joanna Huiying Wu, and Matt Mawson (mmawson@syr.edu)</string>
 
     <string name="gameDescription" translatable="false">Monikers is a party game based on public domain game Celebrity.
         Two teams, comprised of two or more players each, come together for a minimum of

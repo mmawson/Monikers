@@ -59,7 +59,7 @@ public class NavigationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_navigation, container, false);
+        View view = inflater.inflate(R.layout.activity_contact_us, container, false);
         TextView myTitle = (TextView)view.findViewById(
                 R.id.titleText);
         TextView myTextView = (TextView)view.findViewById(

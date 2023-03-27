@@ -96,23 +96,15 @@ public class HomeActivityWithNavDrawer extends AppCompatActivity
 
     @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.setReorderingAllowed(true);
-        fragmentTransaction.addToBackStack("name");
-        NavigationFragment navigationFragment = new NavigationFragment();
-        Bundle mBundle = new Bundle();
 
         switch (menuItem.getItemId()) {
             case R.id.nav_first_fragment:
-                mBundle.putString("fragmentText", getString(R.string.gameDescription));
-                mBundle.putString("Title", "How To Play");
-                navigationFragment.setArguments(mBundle);
-                fragmentTransaction.add(R.id.fragment_container_view, navigationFragment);
-                fragmentTransaction.commit();
+                Intent intent1 = new Intent(this, HowToPlayActivity.class);
+                startActivity(intent1);
                 break;
             case R.id.nav_second_fragment:
-                Toast.makeText(this, "Biographical Info Fragment", Toast.LENGTH_SHORT).show();
+                Intent intent2 = new Intent(this, ContactUsActivity.class);
+                startActivity(intent2);
                 break;
         }
         drawerLayout.closeDrawer(GravityCompat.START);
