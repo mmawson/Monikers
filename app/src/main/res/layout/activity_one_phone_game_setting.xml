@@ -81,7 +81,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="90dp"
+        android:layout_marginBottom="20dp"
         android:text="Next" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
