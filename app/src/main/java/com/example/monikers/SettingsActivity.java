@@ -53,7 +53,7 @@ public class SettingsActivity extends AppCompatActivity {
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                         // Set the selected date to the birthday text field
                         birthday = String.format(Locale.getDefault(), "%02d/%02d/%d", month + 1, day, year);
-                        EditText birthdayText = findViewById(R.id.birthdayText);
+                        EditText birthdayText = findViewById(R.id.edit_text_birthday);
                         birthdayText.setText(birthday);
                     }
                 },
@@ -77,8 +77,7 @@ public class SettingsActivity extends AppCompatActivity {
         String name = editTextName.getText().toString();
         String email = editTextEmail.getText().toString();
         String password = editTextPassword.getText().toString();
-
-        // TODO: Add validation for name, email, and password
+        String newBirthday = editTextBirthday.getText().toString();
 
         // Show a dialog to confirm the changes
         new AlertDialog.Builder(this)
@@ -92,23 +91,27 @@ public class SettingsActivity extends AppCompatActivity {
                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                         String uid = user.getUid();
 
-                        // Update the user's name
-                        databaseReference.child("Users").child(uid).child("displayname").setValue(name);
+                        // Update the user's name if not empty
+                        if (!TextUtils.isEmpty(name)) {
+                            databaseReference.child("Users").child(uid).child("displayname").setValue(name);
+                        }
 
-                        // Update the user's email
-                        user.updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    databaseReference.child("Users").child(uid).child("email").setValue(email);
-                                } else {
-                                    // Handle the error
-                                    Toast.makeText(SettingsActivity.this, "Error updating email", Toast.LENGTH_SHORT).show();
+                        // Update the user's email if not empty
+                        if (!TextUtils.isEmpty(email)) {
+                            user.updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        databaseReference.child("Users").child(uid).child("email").setValue(email);
+                                    } else {
+                                        // Handle the error
+                                        Toast.makeText(SettingsActivity.this, "Error updating email", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
 
-                        // Update the user's password
+                        // Update the user's password if not empty
                         if (!TextUtils.isEmpty(password)) {
                             user.updatePassword(password).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
@@ -121,12 +124,12 @@ public class SettingsActivity extends AppCompatActivity {
                                     }
                                 }
                             });
-                        } else {
-                            Toast.makeText(SettingsActivity.this, "Changes saved", Toast.LENGTH_SHORT).show();
-                            finish();
                         }
-                        // Update the user's birthday
-                        databaseReference.child("Users").child(uid).child("birthday").setValue(birthday);
+
+                        // Update the user's birthday if not empty
+                        if (!TextUtils.isEmpty(newBirthday)) {
+                            databaseReference.child("Users").child(uid).child("birthday").setValue(birthday);
+                        }
 
                         Toast.makeText(SettingsActivity.this, "Changes saved", Toast.LENGTH_SHORT).show();
                         finish();
