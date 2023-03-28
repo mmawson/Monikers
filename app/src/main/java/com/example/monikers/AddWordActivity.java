@@ -97,6 +97,28 @@ public class AddWordActivity extends AppCompatActivity {
         maxWordsTotal = playerCount * cardsCount;
         totalWords = maxWordsTotal;
 
+        //Populate word list with what's already in the DB
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference wordsRef = database.getReference(mGameDBPath + "/words");
+
+        wordsRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (!task.isSuccessful()) {
+                    Log.e("Monikers", "Error getting data", task.getException());
+                }
+                else {
+                    DataSnapshot wordData = task.getResult();
+                    for (DataSnapshot word : wordData.getChildren()) {
+                        wordList.add(word.getValue().toString());
+                    }
+                }
+            }
+        });
+
+
+
         textViewTotalWords.setText("Number of remaining words: " + totalWords);
 
         // Get a reference to the Firebase database

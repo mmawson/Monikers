@@ -136,13 +136,16 @@ public class CluegivingActivity extends AppCompatActivity {
 
     }
     private void RequestNotificationPermissions() {
-        if (ContextCompat.checkSelfPermission(getBaseContext(),
-                Manifest.permission.POST_NOTIFICATIONS)
-                != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.POST_NOTIFICATIONS},
                     REQUEST_FOR_POST_NOTIFICATIONS);
-        }
+//        if (ContextCompat.checkSelfPermission(getBaseContext(),
+//                Manifest.permission.POST_NOTIFICATIONS)
+//                != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(this,
+//                    new String[]{Manifest.permission.POST_NOTIFICATIONS},
+//                    REQUEST_FOR_POST_NOTIFICATIONS);
+//        }
     }
 
     private void NotifyUserOfTurnStart() {
