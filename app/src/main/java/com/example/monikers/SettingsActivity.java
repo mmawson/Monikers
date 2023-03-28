@@ -98,17 +98,7 @@ public class SettingsActivity extends AppCompatActivity {
 
                         // Update the user's email if not empty
                         if (!TextUtils.isEmpty(email)) {
-                            user.updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        databaseReference.child("Users").child(uid).child("email").setValue(email);
-                                    } else {
-                                        // Handle the error
-                                        Toast.makeText(SettingsActivity.this, "Error updating email", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
+                            databaseReference.child("Users").child(uid).child("email").setValue(email);
                         }
 
                         // Update the user's password if not empty
