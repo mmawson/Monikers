@@ -77,8 +77,8 @@ public class HomeActivityWithNavDrawer extends AppCompatActivity
     protected void onStart() {
         super.onStart();
 
-        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        intentFilter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        IntentFilter intentFilter = new IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        intentFilter.addAction(Intent.ACTION_BATTERY_LOW);
         this.registerReceiver(myBroadcastReceiver, intentFilter);
     }
 
